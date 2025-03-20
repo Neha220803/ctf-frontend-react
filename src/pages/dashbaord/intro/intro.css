@@ -1,0 +1,28 @@
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), #008080cd);
+  border-radius: 10px;
+  box-shadow: 0 0 15px #008080b9;
+}
+
+/* Cards */
+.card {
+  background: #222;
+  border: 1px solid #c1055b;
+  border-radius: 10px;
+  width: 100% !important;
+  padding: 20px;
+  box-shadow: 0 0 10px #c1055a7d;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #c1055ad1;
+}
+
+/* Footer */
+footer {
+  background-color: #c1055b;
+  box-shadow: 0px -4px 10px rgba(255, 0, 0, 0.5);
+}

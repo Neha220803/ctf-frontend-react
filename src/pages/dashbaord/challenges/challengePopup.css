@@ -1,0 +1,82 @@
+/* Custom Modal Styles */
+.modal-content {
+  /* height: 500px !important;
+  width: 400px !important; */
+  background-color: #101010 !important; /* Dark background */
+  border: 1px solid #ff075d !important; /* Squid Game Pink Border */
+  border-radius: 12px !important;
+  box-shadow: 0 0 15px #d90452 !important; /* Neon Glow Effect */
+  color: #fff !important;
+  text-transform: uppercase !important;
+  text-align: center !important;
+}
+.modal-title {
+  font-family: "SquidGameFont", sans-serif !important;
+  color: #ff075d !important;
+  font-size: 24px !important;
+  text-shadow: 0 0 8px #ff075d !important;
+  margin-left: 15% !important;
+}
+
+.modal-body {
+  font-family: "SquidGameFont", sans-serif !important;
+  font-size: 18px !important;
+  color: #ffffff !important;
+  padding: 20px !important;
+}
+.modal {
+  background-color: transparent !important;
+}
+/* Modal Buttons */
+.btn-primary {
+  background-color: #ff075d; /* Squid Game Pink */
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 8px;
+  text-transform: uppercase;
+  transition: 0.3s ease-in-out;
+}
+.btn-success {
+  background-color: #7d0f36;
+  border: none;
+}
+.btn-success:hover {
+  background-color: #971442;
+}
+.btn-primary:hover {
+  background-color: #d90452; /* Darker Pink */
+  box-shadow: 0 0 15px #ff075d;
+}
+.btn-close {
+  filter: invert(1); /* Makes it white */
+}
+/* Input Fields */
+.input-group input {
+  background-color: #fafafa;
+  border: 1px solid #d90452;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  font-family: monospace;
+}
+
+.input-group input:focus {
+  box-shadow: 0 0 10px #d90452;
+  outline: none;
+}
+#statusMessage {
+  font-size: 16px;
+  text-align: center;
+}
+
+.btn-warning {
+  font-size: "SquidGameFont", sans-serif;
+}
+
+.phrase {
+  font-size: 15px;
+  color: #d90452;
+}

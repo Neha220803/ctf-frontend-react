@@ -1,0 +1,119 @@
+/* Challenges Section */
+.challenge-section {
+  margin-top: 40px !important;
+}
+
+.challenge-heading {
+  font-size: 28px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin-bottom: 20px !important;
+  text-transform: uppercase !important;
+  color: #c1055b !important;
+}
+
+/* Card Styles */
+.cards-wrapper,
+.challenge-cards-wrapper {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+  justify-content: center !important;
+  padding: 20px 0 !important;
+}
+
+.challenge-card {
+  background-color: transparent !important;
+  border: 3px solid #008080 !important;
+  border-radius: 10px !important;
+  width: 90% !important; /* Card width */
+  height: 150px !important; /* Card height */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  color: #fff !important;
+  text-align: center !important;
+  transition: all 0.3s ease-in-out !important;
+  box-shadow: 0 0 15px #008080 !important;
+}
+
+.challenge-card:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 30px #008080 !important;
+}
+
+/* Easy Challenge Layout */
+.easy .cards-wrapper {
+  justify-content: start;
+}
+
+.easy .card {
+  width: calc(25% - 20px); /* 4 cards in a row, with space between */
+}
+
+/* Medium Challenge Layout */
+.medium .cards-wrapper {
+  justify-content: start;
+}
+
+.medium .card {
+  width: calc(25% - 20px); /* 2 cards in the middle */
+}
+
+/* Hard Challenge Layout */
+.hard .cards-wrapper {
+  justify-content: start;
+}
+
+.hard .card {
+  width: calc(60% - 20px); /* 1 card, taking full width */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+  .easy .card {
+    width: calc(50% - 20px); /* 2 cards in a row on medium screens */
+  }
+}
+
+@media (max-width: 992px) {
+  .easy .card {
+    width: calc(50% - 20px); /* 2 cards in a row on smaller screens */
+  }
+  .medium .card {
+    width: calc(50% - 20px); /* 1 card in the row on small screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .easy .card {
+    width: 80%;
+    margin-left: 50px; /* 1 card per row on small screens */
+  }
+  .medium .card {
+    width: 80%; /* 1 card per row on small screens */
+  }
+  .hard .card {
+    width: 80%; /* 1 card per row on small screens */
+  }
+  .modal-dialog {
+    margin-top: 35%;
+  }
+}
+
+@media (max-width: 576px) {
+  .easy .card {
+    width: 100%; /* 1 card per row on very small screens */
+  }
+  .medium .card {
+    width: 100%; /* 1 card per row on very small screens */
+  }
+  .hard .card {
+    width: 100%; /* 1 card per row on very small screens */
+  }
+  .modal-dialog {
+    margin-top: 55%;
+  }
+}
