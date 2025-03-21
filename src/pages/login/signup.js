@@ -39,10 +39,10 @@ const SignUpComponent = () => {
       <h1>Sign Up</h1>
 
       <form onSubmit={handleSubmit} className=" flex-column align-items-center">
-        <label>Email:</label>
+        <label>User Name:</label>
         <input
-          type="email"
-          placeholder="Enter your email"
+          type="text"
+          placeholder="Enter team name"
           required
           className="mb-4 bg-dark text-white"
           value={email}

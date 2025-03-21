@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import "./challengePopup.css";
-
+import { ImArrowRight } from "react-icons/im";
 const ChallengePopup = ({
   modalData,
   closeModal,
@@ -27,10 +27,10 @@ const ChallengePopup = ({
         <p className="mb-4">{modalData.description}</p>
 
         <Button variant="primary" className="w-100 mb-3">
-          VIEW HINTS
+          View HINTS
         </Button>
         <Button variant="success" className="w-100 mb-3">
-          UNLOCK HINT FOR 20 POINTS
+          View Challenge <ImArrowRight />
         </Button>
 
         <InputGroup className="mb-3">

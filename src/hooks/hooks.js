@@ -1,7 +1,7 @@
 // hooks.js
 import { useState } from "react";
 
-const API_URL = "http://localhost:4000";
+const API_URL = "http://13.251.98.105:80";
 
 // Custom hook for handling API calls
 const useApi = () => {

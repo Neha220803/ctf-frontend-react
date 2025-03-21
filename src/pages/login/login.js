@@ -47,10 +47,10 @@ const LoginPage = () => {
             <div className="error-message mb-4 text-red-500">{message}</div>
           )}
 
-          <label className="mb-2">Email:</label>
+          <label className="mb-2">User Name:</label>
           <input
-            type="email"
-            placeholder="Enter your email"
+            type="text"
+            placeholder="Enter your User name"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
