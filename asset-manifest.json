@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ctf-frontend-react/static/css/main.efab0730.css",
-    "main.js": "/ctf-frontend-react/static/js/main.bce90528.js",
+    "main.css": "/ctf-frontend-react/static/css/main.75020d69.css",
+    "main.js": "/ctf-frontend-react/static/js/main.7405fcf2.js",
     "static/media/loginvideo.mp4": "/ctf-frontend-react/static/media/loginvideo.b85b31406738c5b75807.mp4",
     "static/media/squidgamefont.ttf": "/ctf-frontend-react/static/media/squidgamefont.e0727d0bce17b79e412d.ttf",
     "index.html": "/ctf-frontend-react/index.html",
-    "main.efab0730.css.map": "/ctf-frontend-react/static/css/main.efab0730.css.map",
-    "main.bce90528.js.map": "/ctf-frontend-react/static/js/main.bce90528.js.map"
+    "main.75020d69.css.map": "/ctf-frontend-react/static/css/main.75020d69.css.map",
+    "main.7405fcf2.js.map": "/ctf-frontend-react/static/js/main.7405fcf2.js.map"
   },
   "entrypoints": [
-    "static/css/main.efab0730.css",
-    "static/js/main.bce90528.js"
+    "static/css/main.75020d69.css",
+    "static/js/main.7405fcf2.js"
   ]
 }
