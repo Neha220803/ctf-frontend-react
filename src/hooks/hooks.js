@@ -1,39 +1,46 @@
-// hooks.js
 import { useState } from "react";
+import axios from "axios";
 
-const API_URL = "http://13.251.98.105:80";
+// Use HTTPS if available, otherwise fallback to HTTP
+const API_URL = "http://3.110.51.160/";
 
 // Custom hook for handling API calls
 const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Helper function for making API requests
-  const fetchApi = async (endpoint, method, body = null) => {
+  // Create an axios instance with default configs
+  const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // Important for cookies/session to work
+    withCredentials: true,
+  });
+
+  // Improved helper function for making API requests
+  const fetchApi = async (endpoint, method, data = null) => {
     setLoading(true);
     setError(null);
-
     try {
-      const options = {
+      const config = {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Important for cookies/session to work
-        credentials: "include",
+        url: endpoint,
       };
 
-      if (body) {
-        options.body = JSON.stringify(body);
+      if (data) {
+        config.data = data;
       }
 
-      const response = await fetch(`${API_URL}${endpoint}`, options);
-      const data = await response.json();
-
+      const response = await api(config);
       setLoading(false);
-      return data;
+      return response.data;
     } catch (err) {
-      setError(err.message || "An error occurred");
+      console.error("API Error:", err);
+      setError(
+        err.response?.data?.message || err.message || "An error occurred"
+      );
       setLoading(false);
       throw err;
     }
@@ -59,7 +66,7 @@ const useApi = () => {
     return fetchApi("/team-score", "GET");
   };
 
-  // Update this function in hooks.js
+  // Submit flag
   const submitFlag = async (data) => {
     return fetchApi("/submit-flag", "POST", data);
   };

@@ -13,16 +13,13 @@ const SignUpComponent = () => {
 
     try {
       const result = await signup(email, password);
-
       if (result.status === "success") {
         setMessage("User created successfully!");
-
         // Login the user after successful signup to get the teamId
         const loginResult = await login(email, password);
         if (loginResult.status === "success") {
           setTeamId(loginResult.teamid);
         }
-
         // Clear the form
         setEmail("");
         setPassword("");
