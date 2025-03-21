@@ -5,7 +5,7 @@ const IntroPage = () => {
   return (
     <section style={{ backgroundColor: "#111", color: "#fff" }}>
       <div className="container pt-5">
-        <div className="hero">
+        <div className="hero mt-5">
           <h1 className="text-danger fw-bold">⚠ Welcome to Squid Game CTF</h1>
           <p className="fs-4">
             The ultimate cybersecurity battleground. Do you have what it takes

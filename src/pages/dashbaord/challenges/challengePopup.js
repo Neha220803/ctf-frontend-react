@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import "./challengePopup.css";
 
@@ -50,12 +49,20 @@ const ChallengePopup = ({
         </InputGroup>
 
         {modalData.statusMessage && (
-          <div className="text-success text-center mt-2">
-            Successful submission
+          <div
+            className={`text-center mt-2 ${
+              modalData.isSuccess ? "text-success" : "text-danger"
+            }`}
+          >
+            {modalData.messageText ||
+              (modalData.isSuccess
+                ? "Successful submission"
+                : "Incorrect submission")}
           </div>
         )}
       </Modal.Body>
     </Modal>
   );
 };
+
 export default ChallengePopup;

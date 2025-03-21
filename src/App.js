@@ -5,11 +5,12 @@ import SquidGameNavbar from "./pages/dashbaord/nav/nav";
 import { Routes, Route, BrowserRouter, useLocation } from "react-router-dom";
 import ChallengesPage from "./pages/dashbaord/challenges/challenges";
 import LeaderboardPage from "./pages/dashbaord/leaderboard/leaderboard";
+import SignUpComponent from "./pages/login/signup";
 
 function App() {
   return (
     <div>
-      <BrowserRouter>
+      <BrowserRouter basename="/ctf-frontend-react">
         <AppContent />
       </BrowserRouter>
     </div>
@@ -25,6 +26,8 @@ function AppContent() {
       {showNavbar && <SquidGameNavbar />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpComponent />} />
+        <Route exact path="/" element={<LoginPage />} />
         <Route exact path="/dashboard/home" element={<IntroPage />} />
         <Route
           exact

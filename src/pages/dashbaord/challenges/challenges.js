@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -8,13 +8,15 @@ import {
   Button,
   Form,
   InputGroup,
+  Badge,
 } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./challenges.css";
-
+import useApi from "../../../hooks/hooks"; // Adjust the path based on your project structure
 import ChallengePopup from "./challengePopup";
+import challenges from "./challengesData";
 
 const ChallengesPage = () => {
+  const [completedChallenges, setCompletedChallenges] = useState([]);
   const [modalData, setModalData] = useState({
     isOpen: false,
     name: "",
@@ -22,115 +24,39 @@ const ChallengesPage = () => {
     description: "",
     answer: "",
     statusMessage: false,
+    isSuccess: false,
+    messageText: "",
+    challengeId: null,
   });
 
-  // Challenge data organized by difficulty level
-  const challenges = {
-    easy: [
-      {
-        name: "Cryptography",
-        points: 100,
-        description: "Decrypt a simple cipher text.",
-        level: "Easy",
-      },
-      {
-        name: "Steganography",
-        points: 100,
-        description: "Find the hidden message in an image.",
-        level: "Easy",
-      },
-      {
-        name: "Web Exploitation",
-        points: 100,
-        description: "Find an SQL Injection vulnerability.",
-        level: "Easy",
-      },
-      {
-        name: "Binary Exploitation",
-        points: 100,
-        description: "Analyze a basic buffer overflow vulnerability.",
-        level: "Easy",
-      },
-      {
-        name: "Reverse Engineering",
-        points: 100,
-        description: "Extract a hidden string from a compiled binary.",
-        level: "Easy",
-      },
-      {
-        name: "Forensics",
-        points: 100,
-        description: "Extract metadata from a file.",
-        level: "Easy",
-      },
-      {
-        name: "OSINT Challenge",
-        points: 100,
-        description: "Find a specific person using open-source intelligence.",
-        level: "Easy",
-      },
-    ],
-    medium: [
-      {
-        name: "Cryptography",
-        points: 200,
-        description: "Decrypt a message encoded with an advanced cipher.",
-        level: "Medium",
-      },
-      {
-        name: "Steganography",
-        points: 200,
-        description: "Extract hidden text from an audio file.",
-        level: "Medium",
-      },
-      {
-        name: "Web Exploitation",
-        points: 200,
-        description:
-          "Find and exploit a Cross-Site Scripting (XSS) vulnerability.",
-        level: "Medium",
-      },
-      {
-        name: "Binary Exploitation",
-        points: 200,
-        description:
-          "Analyze an executable to find and exploit a buffer overflow.",
-        level: "Medium",
-      },
-      {
-        name: "Reverse Engineering",
-        points: 200,
-        description:
-          "Reverse engineer an application to bypass authentication.",
-        level: "Medium",
-      },
-      {
-        name: "Forensics",
-        points: 200,
-        description: "Recover deleted files from an image dump.",
-        level: "Medium",
-      },
-      {
-        name: "OSINT Challenge",
-        points: 200,
-        description:
-          "Trace an online identity through multiple social platforms.",
-        level: "Medium",
-      },
-    ],
-    hard: [
-      {
-        name: "Hard 1",
-        points: 500,
-        description:
-          "A complex King of the Hill Challenge involving multiple vulnerabilities.",
-        level: "Hard",
-      },
-    ],
+  const { submitFlag, getTeamScore } = useApi(); // Use the API hook to get the functions
+
+  // Fetch user's completed challenges when component mounts
+  useEffect(() => {
+    fetchCompletedChallenges();
+  }, []);
+
+  // Function to fetch completed challenges
+  const fetchCompletedChallenges = async () => {
+    try {
+      const teamScore = await getTeamScore();
+      console.log("Team score data:", teamScore);
+      if (teamScore && teamScore.completedChallenges) {
+        setCompletedChallenges(teamScore.completedChallenges);
+      }
+    } catch (error) {
+      console.error("Error fetching completed challenges:", error);
+    }
   };
 
   // Handle card click to open modal
   const handleCardClick = (challenge) => {
+    // Check if challenge is already completed
+    if (completedChallenges.includes(challenge.id)) {
+      // Don't open modal, just show a message or do nothing
+      return;
+    }
+
     if (challenge.level === "Hard") {
       window.location.href = "hard_challenge.html";
       return;
@@ -142,6 +68,9 @@ const ChallengesPage = () => {
       name: challenge.name,
       points: challenge.points,
       description: challenge.description,
+      challengeId: challenge.id,
+      answer: "",
+      statusMessage: false,
     });
   };
 
@@ -154,18 +83,65 @@ const ChallengesPage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
-    setModalData({
-      ...modalData,
-      statusMessage: true,
-    });
+  const handleSubmit = async () => {
+    try {
+      const teamId = localStorage.getItem("teamId");
 
-    setTimeout(() => {
+      if (!teamId || !modalData.challengeId || !modalData.answer) {
+        setModalData({
+          ...modalData,
+          statusMessage: true,
+          isSuccess: false,
+          messageText: "Missing required information",
+        });
+        return;
+      }
+
+      // Call the API to submit the flag
+      const result = await submitFlag({
+        teamId: teamId,
+        challengeId: modalData.challengeId,
+        flag: modalData.answer,
+      });
+
+      // Display success or error message based on response
       setModalData({
         ...modalData,
-        statusMessage: false,
+        statusMessage: true,
+        isSuccess: result.status,
+        messageText:
+          result.message ||
+          (result.status
+            ? "Correct! You've earned " + modalData.points + " points!"
+            : "Incorrect flag, please try again."),
       });
-    }, 2000);
+
+      // If flag was correct, update the completed challenges list
+      if (result.status) {
+        setCompletedChallenges([...completedChallenges, modalData.challengeId]);
+      }
+    } catch (error) {
+      console.error("Error submitting flag:", error);
+
+      setModalData({
+        ...modalData,
+        statusMessage: true,
+        isSuccess: false,
+        messageText: "Error submitting flag",
+      });
+    }
+
+    // Clear status message after a delay
+    setTimeout(() => {
+      if (modalData.isSuccess) {
+        closeModal();
+      } else {
+        setModalData({
+          ...modalData,
+          statusMessage: false,
+        });
+      }
+    }, 3000);
   };
 
   // Close modal
@@ -173,7 +149,32 @@ const ChallengesPage = () => {
     setModalData({
       ...modalData,
       isOpen: false,
+      answer: "",
+      statusMessage: false,
     });
+  };
+
+  // Function to check if a challenge is completed
+  const isChallengeCompleted = (challengeId) => {
+    return completedChallenges.includes(challengeId);
+  };
+
+  // Function to get challenge card styling
+  const getChallengeCardStyle = (challenge) => {
+    const isCompleted = isChallengeCompleted(challenge.id);
+
+    let style = {
+      cursor: isCompleted ? "default" : "pointer",
+      transition: "transform 0.3s, box-shadow 0.3s",
+    };
+
+    if (isCompleted) {
+      style.backgroundColor = "#28a745"; // Green background for completed challenges
+      style.borderColor = "#28a745";
+      style.color = "white";
+    }
+
+    return style;
   };
 
   const sectionStyle = {
@@ -184,8 +185,8 @@ const ChallengesPage = () => {
     <section className="bg-dark text-white">
       <Container className="bg-dark text-white py-4" style={{}}>
         {/* Easy Challenges Section */}
-        <div style={sectionStyle}>
-          <h2 className="mb-4 text-danger">Easy</h2>
+        <div style={sectionStyle} className="pt-5">
+          <h2 className="mb-4 text-danger mt-5">Easy</h2>
           <Row>
             {challenges.easy.map((challenge, index) => (
               <Col
@@ -194,14 +195,20 @@ const ChallengesPage = () => {
                 sm={6}
                 md={4}
                 lg={3}
-                className=" cards-wrapper"
+                className="cards-wrapper"
               >
                 <Card
-                  className="h-100 border-danger challenge-card"
+                  className="h-100 challenge-card"
+                  style={getChallengeCardStyle(challenge)}
                   onClick={() => handleCardClick(challenge)}
                 >
-                  <Card.Body className="d-flex align-items-center justify-content-center">
+                  <Card.Body className="d-flex flex-column align-items-center justify-content-center">
                     <Card.Title>{challenge.name}</Card.Title>
+                    {isChallengeCompleted(challenge.id) && (
+                      <Badge bg="light" text="dark" className="mt-2">
+                        Completed
+                      </Badge>
+                    )}
                   </Card.Body>
                 </Card>
               </Col>
@@ -223,20 +230,30 @@ const ChallengesPage = () => {
                 className="cards-wrapper"
               >
                 <Card
-                  className="h-100 border-warning challenge-card"
+                  className="h-100 challenge-card"
+                  style={getChallengeCardStyle(challenge)}
                   onClick={() => handleCardClick(challenge)}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.transform = "scale(1.05)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 10px rgba(255, 193, 7, 0.5)";
+                    if (!isChallengeCompleted(challenge.id)) {
+                      e.currentTarget.style.transform = "scale(1.05)";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 10px rgba(255, 193, 7, 0.5)";
+                    }
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                    e.currentTarget.style.boxShadow = "none";
+                    if (!isChallengeCompleted(challenge.id)) {
+                      e.currentTarget.style.transform = "scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }
                   }}
                 >
-                  <Card.Body className="d-flex align-items-center justify-content-center">
+                  <Card.Body className="d-flex flex-column align-items-center justify-content-center">
                     <Card.Title>{challenge.name}</Card.Title>
+                    {isChallengeCompleted(challenge.id) && (
+                      <Badge bg="light" text="dark" className="mt-2">
+                        Completed
+                      </Badge>
+                    )}
                   </Card.Body>
                 </Card>
               </Col>
@@ -258,21 +275,30 @@ const ChallengesPage = () => {
                 className="mb-3 cards-wrapper"
               >
                 <Card
-                  as="a"
-                  href="hard_challenge.html"
-                  className="h-100 border-success challenge-card"
+                  className="h-100 challenge-card"
+                  style={getChallengeCardStyle(challenge)}
+                  onClick={() => handleCardClick(challenge)}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.transform = "scale(1.05)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 10px rgba(40, 167, 69, 0.5)";
+                    if (!isChallengeCompleted(challenge.id)) {
+                      e.currentTarget.style.transform = "scale(1.05)";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 10px rgba(40, 167, 69, 0.5)";
+                    }
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                    e.currentTarget.style.boxShadow = "none";
+                    if (!isChallengeCompleted(challenge.id)) {
+                      e.currentTarget.style.transform = "scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }
                   }}
                 >
-                  <Card.Body className="d-flex align-items-center justify-content-center">
+                  <Card.Body className="d-flex flex-column align-items-center justify-content-center">
                     <Card.Title>{challenge.name}</Card.Title>
+                    {isChallengeCompleted(challenge.id) && (
+                      <Badge bg="light" text="dark" className="mt-2">
+                        Completed
+                      </Badge>
+                    )}
                   </Card.Body>
                 </Card>
               </Col>

@@ -2,17 +2,36 @@ import React, { useState } from "react";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import "./nav.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import useApi from "../../../hooks/hooks"; // Adjust the path to match your project structure
 
 const SquidGameNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useApi(); // Use the logout hook from your API hooks
 
-  const handleSignOut = () => {
-    // Add your sign out logic here
-    console.log("User signed out");
+  const handleSignOut = async () => {
+    try {
+      // Call the logout endpoint through your API hook
+      const result = await logout();
+
+      // Clear local storage
+      localStorage.removeItem("teamId");
+      localStorage.removeItem("token"); // If you store auth token
+
+      // Redirect to login page
+      navigate("/login");
+
+      console.log("User signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+
+      // Even if there's an error, still clear local storage and redirect
+      localStorage.removeItem("teamId");
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
   };
 
   const handleNavigation = (path) => {

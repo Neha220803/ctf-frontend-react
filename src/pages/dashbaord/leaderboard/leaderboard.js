@@ -1,26 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { Container, Table, Form, InputGroup, Button } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from "react";
+import {
+  Container,
+  Table,
+  Form,
+  InputGroup,
+  Button,
+  Spinner,
+} from "react-bootstrap";
+import useApi from "../../../hooks/hooks";
 import "./leaderboard.css";
 
 const LeaderboardPage = () => {
-  const [leaderboardData, setLeaderboardData] = useState([
-    { rank: 1, player: "Team001", score: 9500, solvedChallenges: 15 },
-    { rank: 2, player: "Team456", score: 8800, solvedChallenges: 14 },
-    { rank: 3, player: "Team218", score: 8200, solvedChallenges: 12 },
-    { rank: 4, player: "Team067", score: 7500, solvedChallenges: 11 },
-    { rank: 5, player: "Team199", score: 7000, solvedChallenges: 10 },
-    { rank: 6, player: "Team212", score: 6800, solvedChallenges: 10 },
-    { rank: 7, player: "Team101", score: 6500, solvedChallenges: 9 },
-    { rank: 8, player: "Team303", score: 6000, solvedChallenges: 9 },
-    { rank: 9, player: "Team404", score: 5800, solvedChallenges: 8 },
-    { rank: 10, player: "Team099", score: 5500, solvedChallenges: 8 },
-  ]);
-
+  const [leaderboardData, setLeaderboardData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(leaderboardData);
+  const [filteredData, setFilteredData] = useState([]);
+  const { getLeaderboard, loading, error } = useApi();
 
-  useEffect(() => {
+  // Function to fetch leaderboard data
+  const fetchLeaderboard = async () => {
+    try {
+      const data = await getLeaderboard();
+      console.log("Raw leaderboard data:", data);
+
+      // Transform data to match expected format
+      const formattedData = data.map((item, index) => ({
+        rank: index + 1,
+        player: item.teamid || "Unknown Team",
+        score: item.points || 0,
+        solvedChallenges: item.completedChallenges
+          ? item.completedChallenges.length
+          : 0,
+      }));
+
+      console.log("Formatted data:", formattedData);
+      setLeaderboardData(formattedData);
+      setFilteredData(formattedData);
+    } catch (err) {
+      console.error("Failed to fetch leaderboard:", err);
+    }
+  };
+
+  // Filter data when search term changes
+  const handleSearch = () => {
     if (searchTerm.trim() === "") {
       setFilteredData(leaderboardData);
     } else {
@@ -29,7 +50,7 @@ const LeaderboardPage = () => {
       );
       setFilteredData(filtered);
     }
-  }, [searchTerm, leaderboardData]);
+  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -38,64 +59,104 @@ const LeaderboardPage = () => {
   return (
     <section className="bg-dark">
       <Container className="bg-dark text-white py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="text-danger">Leaderboard</h1>
-          <InputGroup className="w-50">
-            <Form.Control
-              placeholder="Search by player name"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="bg-dark text-white border-danger"
-            />
-            <Button variant="outline-danger">Search</Button>
-          </InputGroup>
+        <div className="d-flex justify-content-between align-items-center mb-4 mt-5">
+          <h1 className="text-danger mt-4">Leaderboard</h1>
+          <div className="d-flex">
+            <Button
+              variant="danger"
+              className="me-3"
+              onClick={fetchLeaderboard}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Loading...
+                </>
+              ) : (
+                "Refresh Leaderboard"
+              )}
+            </Button>
+            <InputGroup>
+              <Form.Control
+                placeholder="Search by team name"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="bg-dark text-white border-danger"
+              />
+              <Button variant="outline-danger" onClick={handleSearch}>
+                Search
+              </Button>
+            </InputGroup>
+          </div>
         </div>
 
         <div className="leaderboard-container">
-          <Table striped bordered hover variant="dark" responsive>
-            <thead>
-              <tr className="text-danger">
-                <th>Rank</th>
-                <th>Team</th>
-                <th>Score</th>
-                <th>Solved Challenges</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((player) => (
-                <tr key={player.rank}>
-                  <td>{player.rank}</td>
-                  <td>{player.player}</td>
-                  <td>{player.score}</td>
-                  <td>{player.solvedChallenges}</td>
+          {loading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="danger" />
+              <p className="mt-2">Loading leaderboard data...</p>
+            </div>
+          ) : error ? (
+            <div className="alert alert-danger" role="alert">
+              Error loading leaderboard: {error}
+            </div>
+          ) : leaderboardData.length === 0 ? (
+            <div className="text-center py-5">
+              <p>Click the "Refresh Leaderboard" button to load data</p>
+            </div>
+          ) : (
+            <Table striped bordered hover variant="dark" responsive>
+              <thead>
+                <tr className="text-danger">
+                  <th>Rank</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                  <th>Solved Challenges</th>
                 </tr>
-              ))}
-              {filteredData.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    No players found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {filteredData.map((player) => (
+                  <tr key={player.rank}>
+                    <td>{player.rank}</td>
+                    <td>{player.player}</td>
+                    <td>{player.score}</td>
+                    <td>{player.solvedChallenges}</td>
+                  </tr>
+                ))}
+                {filteredData.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      No teams found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          )}
         </div>
 
-        <div className="mt-4 p-3 bg-danger rounded">
+        <div className="mt-4 p-3 bg-danger bg-opacity-10 rounded">
           <h3 className="text-white">Rules</h3>
           <ul className="text-white">
-            <li>Players are ranked based on total score</li>
+            <li>Teams are ranked based on total score</li>
             <li>
-              In case of a tie, the player who solved more challenges ranks
-              higher
+              In case of a tie, the team who solved more challenges ranks higher
             </li>
             <li>
-              If still tied, the player who completed challenges faster ranks
+              If still tied, the team who completed challenges faster ranks
               higher
             </li>
-            <li>Leaderboard updates in real-time</li>
+            <li>Click "Refresh Leaderboard" to see the latest scores</li>
             <li>
-              Top 3 players will receive special rewards at the end of the CTF
+              Top 3 teams will receive special rewards at the end of the CTF
               event
             </li>
           </ul>
