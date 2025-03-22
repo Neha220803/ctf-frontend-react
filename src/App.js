@@ -10,7 +10,7 @@ import SignUpComponent from "./pages/login/signup";
 function App() {
   return (
     <div>
-      <BrowserRouter basename="/ctf-frontend-react">
+      <BrowserRouter>
         <AppContent />
       </BrowserRouter>
     </div>
