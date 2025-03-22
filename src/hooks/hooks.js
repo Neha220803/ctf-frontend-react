@@ -1,8 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-// Use HTTPS if available, otherwise fallback to HTTP
-const API_URL = "http://3.110.51.160/";
+const API_URL = "https://the-squid-hunt.vip/api";
 
 // Custom hook for handling API calls
 const useApi = () => {
@@ -15,7 +14,6 @@ const useApi = () => {
     headers: {
       "Content-Type": "application/json",
     },
-    // Important for cookies/session to work
     withCredentials: true,
   });
 
