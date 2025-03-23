@@ -1,35 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useApi from "../../../hooks/hooks"; // Adjust path as needed
 import "./intro.css";
 
 const IntroPage = () => {
-  const [teamScore, setTeamScore] = useState(0);
-  const { isAuthenticated, teamId, getTeamScore } = useApi();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Only fetch team score if user is authenticated
-    const fetchTeamScore = async () => {
-      if (isAuthenticated && teamId) {
-        setLoading(true);
-        try {
-          const scoreData = await getTeamScore();
-          setTeamScore(scoreData.points || 0);
-        } catch (error) {
-          console.error("Error fetching team score:", error);
-          // If there's an error, use localStorage as fallback
-          const storedPoints = localStorage.getItem("points");
-          if (storedPoints) {
-            setTeamScore(parseInt(storedPoints, 10));
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchTeamScore();
-  }, [isAuthenticated, teamId, getTeamScore]);
+  const { isAuthenticated, teamId } = useApi();
 
   return (
     <section style={{ backgroundColor: "#111", color: "#fff" }}>
@@ -41,9 +15,6 @@ const IntroPage = () => {
             <div className="debug-info bg-dark p-3 mt-3 rounded">
               <p className="text-success mb-1">User authenticated</p>
               <p className="text-info mb-1">Team ID: {teamId || "N/A"}</p>
-              <p className="text-info mb-1">
-                Points: {loading ? "Loading..." : teamScore}
-              </p>
             </div>
           ) : (
             <div className="debug-info bg-dark p-3 mt-3 rounded">
@@ -83,7 +54,7 @@ const IntroPage = () => {
           Enter the arena, embrace the challenge, and let the{" "}
           <strong>hacking battle begin!</strong>
         </p>
-        <a href="challenges.html" className="btn btn-danger btn-lg mt-3">
+        <a href="/dashboard/challenges" className="btn btn-danger btn-lg mt-3">
           🚀 Start Now
         </a>
       </div>
