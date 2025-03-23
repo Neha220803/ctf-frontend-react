@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = "http://localhost:4000";
+const API_URL = "https://the-squid-hunt.vip";
 const TOKEN_KEY = "auth_token";
 const TEAM_ID_KEY = "team_id";
 
