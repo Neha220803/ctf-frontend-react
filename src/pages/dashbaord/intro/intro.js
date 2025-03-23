@@ -1,50 +1,59 @@
 import React, { useState, useEffect } from "react";
+import useApi from "../../../hooks/hooks"; // Adjust path as needed
 import "./intro.css";
 
 const IntroPage = () => {
-  const [teamScore, setTeamScore] = useState(null);
-  const [sessionInfo, setSessionInfo] = useState({});
+  const [teamScore, setTeamScore] = useState(0);
+  const { isAuthenticated, teamId, getTeamScore } = useApi();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch team score which includes session info
+    // Only fetch team score if user is authenticated
     const fetchTeamScore = async () => {
-      try {
-        const response = await fetch(
-          "https://the-squid-hunt.vip/api/team-score",
-          {
-            credentials: "include",
+      if (isAuthenticated && teamId) {
+        setLoading(true);
+        try {
+          const scoreData = await getTeamScore();
+          setTeamScore(scoreData.points || 0);
+        } catch (error) {
+          console.error("Error fetching team score:", error);
+          // If there's an error, use localStorage as fallback
+          const storedPoints = localStorage.getItem("points");
+          if (storedPoints) {
+            setTeamScore(parseInt(storedPoints, 10));
           }
-        );
-        const data = await response.json();
-        setTeamScore(data);
-        setSessionInfo({
-          teamId: data.teamid,
-          sessionId: document.cookie.includes("connect.sid")
-            ? "Active"
-            : "None",
-        });
-      } catch (error) {
-        console.error("Error fetching team data:", error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
     fetchTeamScore();
-  }, []);
+  }, [isAuthenticated, teamId, getTeamScore]);
 
   return (
     <section style={{ backgroundColor: "#111", color: "#fff" }}>
       <div className="container pt-5">
         <div className="hero mt-5">
           <h1 className="text-danger fw-bold">⚠ Welcome to Squid Game CTF</h1>
-          {sessionInfo.teamId && (
+
+          {isAuthenticated ? (
             <div className="debug-info bg-dark p-3 mt-3 rounded">
-              <p className="text-info mb-1">Team ID: {sessionInfo.teamId}</p>
+              <p className="text-success mb-1">User authenticated</p>
+              <p className="text-info mb-1">Team ID: {teamId || "N/A"}</p>
               <p className="text-info mb-1">
-                Session Status: {sessionInfo.sessionId}
+                Points: {loading ? "Loading..." : teamScore}
               </p>
-              <p className="text-info mb-1">Points: {teamScore?.points || 0}</p>
+            </div>
+          ) : (
+            <div className="debug-info bg-dark p-3 mt-3 rounded">
+              <p className="text-warning mb-1">User not authenticated</p>
+              <p className="text-info mb-1">
+                Please log in to view your team stats
+              </p>
             </div>
           )}
+
           <p className="fs-4">
             The ultimate cybersecurity battleground. Do you have what it takes
             to survive?
@@ -57,20 +66,11 @@ const IntroPage = () => {
           <div className="col-md-6 col-6">
             <div className="card p-4">
               <h2 className="text-warning">🔍 What's the Game?</h2>
-              {/* <p className="fs-5">
-                This isn't just a challenge; it's a **war of wits.** Solve cryptography, web security, 
-                forensics, and reverse engineering puzzles to **prove your hacking mastery** and **climb the leaderboard**!
-              </p> */}
             </div>
           </div>
           <div className="col-md-6">
             <div className="card p-4">
               <h2 className="text-success">🛡 Why Join?</h2>
-              {/* <p className="fs-5">
-                - **Experience real-world cybersecurity scenarios**.<br>
-                - **Compete with the best minds** in your college.<br>
-                - **Earn recognition, bragging rights, and ultimate hacker glory**.
-              </p> */}
             </div>
           </div>
         </div>
@@ -80,8 +80,8 @@ const IntroPage = () => {
       <div className="container text-center mt-5">
         <h2 className="text-primary">🏆 Are You Ready?</h2>
         <p className="fs-5">
-          Enter the arena, embrace the challenge, and let the **hacking battle
-          begin!**
+          Enter the arena, embrace the challenge, and let the{" "}
+          <strong>hacking battle begin!</strong>
         </p>
         <a href="challenges.html" className="btn btn-danger btn-lg mt-3">
           🚀 Start Now

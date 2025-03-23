@@ -18,8 +18,9 @@ const LoginPage = () => {
       const result = await login(email, password);
 
       if (result.status === "success") {
-        // Store teamId in localStorage or context for future use
+        // Store teamId and token in localStorage
         localStorage.setItem("teamId", result.teamid);
+        localStorage.setItem("auth_token", result.token); // Store JWT token
 
         // Redirect to dashboard using React Router
         navigate("/dashboard/home");
@@ -70,13 +71,6 @@ const LoginPage = () => {
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
-
-          <p className="mt-4 text-center">
-            Don't have an account?{" "}
-            <a href="/signup" className="text-blue-500">
-              Sign up
-            </a>
-          </p>
         </form>
       </div>
     </div>

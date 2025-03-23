@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Modal,
-  Button,
-  Form,
-  InputGroup,
-  Badge,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import "./challenges.css";
-import useApi from "../../../hooks/hooks"; // Adjust the path based on your project structure
+import useApi from "../../../hooks/hooks"; // Updated import path
 import ChallengePopup from "./challengePopup";
 import challenges from "./challengesData";
 
@@ -29,16 +19,24 @@ const ChallengesPage = () => {
     challengeId: null,
   });
 
-  const { submitFlag, getTeamScore } = useApi(); // Use the API hook to get the functions
+  // Use the API hook to get the functions and authentication state
+  const { submitFlag, getTeamScore, isAuthenticated, teamId, loading, error } =
+    useApi();
 
-  // Fetch user's completed challenges when component mounts
+  // Fetch user's completed challenges when component mounts or auth state changes
   useEffect(() => {
-    fetchCompletedChallenges();
-  }, []);
+    if (isAuthenticated) {
+      console.log("Authenticated, fetching completed challenges");
+      fetchCompletedChallenges();
+    } else {
+      console.log("Not authenticated yet");
+    }
+  }, [isAuthenticated]);
 
   // Function to fetch completed challenges
   const fetchCompletedChallenges = async () => {
     try {
+      console.log("Fetching team score data...");
       const teamScore = await getTeamScore();
       console.log("Team score data:", teamScore);
       if (teamScore && teamScore.completedChallenges) {
@@ -51,6 +49,12 @@ const ChallengesPage = () => {
 
   // Handle card click to open modal
   const handleCardClick = (challenge) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      alert("Please log in to access challenges");
+      return;
+    }
+
     // Check if challenge is already completed
     if (completedChallenges.includes(challenge.id)) {
       // Don't open modal, just show a message or do nothing
@@ -85,9 +89,19 @@ const ChallengesPage = () => {
   // Handle form submission
   const handleSubmit = async () => {
     try {
-      const teamId = localStorage.getItem("teamId");
+      if (!isAuthenticated) {
+        setModalData({
+          ...modalData,
+          statusMessage: true,
+          isSuccess: false,
+          messageText: "You need to be logged in to submit flags",
+        });
+        return;
+      }
 
-      if (!teamId || !modalData.challengeId || !modalData.answer) {
+      console.log("Submitting flag with auth token...");
+
+      if (!modalData.challengeId || !modalData.answer) {
         setModalData({
           ...modalData,
           statusMessage: true,
@@ -99,10 +113,11 @@ const ChallengesPage = () => {
 
       // Call the API to submit the flag
       const result = await submitFlag({
-        teamId: teamId,
         challengeId: modalData.challengeId,
         flag: modalData.answer,
       });
+
+      console.log("Flag submission result:", result);
 
       // Display success or error message based on response
       setModalData({
@@ -127,7 +142,8 @@ const ChallengesPage = () => {
         ...modalData,
         statusMessage: true,
         isSuccess: false,
-        messageText: "Error submitting flag",
+        messageText:
+          "Error submitting flag: " + (error.message || "Unknown error"),
       });
     }
 
@@ -184,8 +200,35 @@ const ChallengesPage = () => {
   return (
     <section className="bg-dark text-white">
       <Container className="bg-dark text-white py-4" style={{}}>
+        {/* Authentication Status Section */}
+        <div className="pt-5">
+          {!isAuthenticated && (
+            <div className="alert alert-warning my-4">
+              Please log in to access and submit challenges.
+            </div>
+          )}
+
+          {loading && (
+            <div className="text-center my-4">
+              <div className="spinner-border text-light" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="alert alert-danger my-4">Error: {error}</div>
+          )}
+
+          {isAuthenticated && !loading && (
+            <div className="alert alert-success my-4">
+              User authenticated. Team ID: {teamId}
+            </div>
+          )}
+        </div>
+
         {/* Easy Challenges Section */}
-        <div style={sectionStyle} className="pt-5">
+        <div style={sectionStyle}>
           <h2 className="mb-4 text-danger mt-5">Easy</h2>
           <Row>
             {challenges.easy.map((challenge, index) => (

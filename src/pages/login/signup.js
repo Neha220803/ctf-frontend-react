@@ -1,33 +1,35 @@
 import React, { useState } from "react";
-import useApi from "../../hooks/hooks"; // Import the custom hook
+import { useNavigate } from "react-router-dom";
+import useApi from "../../hooks/hooks"; // Updated path if needed
 
 const SignUpComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
-  const [teamId, setTeamId] = useState(null);
-  const { loading, error, signup, login } = useApi(); // Get both signup and login functions
+  const { loading, error, signup, login } = useApi();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage(null); // Clear any previous messages
 
     try {
       const result = await signup(email, password);
       if (result.status === "success") {
         setMessage("User created successfully!");
-        // Login the user after successful signup to get the teamId
+
+        // Log the user in immediately after signup
         const loginResult = await login(email, password);
         if (loginResult.status === "success") {
-          setTeamId(loginResult.teamid);
+          setMessage(`Credentials for Team "${email}" created successfully!`);
+        } else {
+          setMessage(loginResult.message || "Login failed after signup.");
         }
-        // Clear the form
-        setEmail("");
-        setPassword("");
       } else {
-        setMessage(result.message || "Signup failed");
+        setMessage(result.message || "Signup failed.");
       }
     } catch (err) {
-      setMessage(error || "An error occurred during signup");
+      setMessage(error || "An error occurred during signup.");
     }
   };
 
@@ -35,29 +37,32 @@ const SignUpComponent = () => {
     <div className="d-flex flex-column align-items-center justify-content-center vh-100">
       <h1>Sign Up</h1>
 
-      <form onSubmit={handleSubmit} className=" flex-column align-items-center">
-        <label>User Name:</label>
-        <input
-          type="text"
-          placeholder="Enter team name"
-          required
-          className="mb-4 bg-dark text-white"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <label>Password:</label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          required
-          className="mb-4 bg-dark text-white"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit" className="login-btn" disabled={loading}>
-          {loading ? "Signing Up..." : "Sign Up"}
-        </button>
+      <form onSubmit={handleSubmit} className="flex-column align-items-center">
+        <fieldset disabled={loading}>
+          <label>User Name:</label>
+          <input
+            type="text"
+            placeholder="Enter team name"
+            required
+            className="mb-4 bg-dark text-white"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label>Password:</label>
+          <input
+            type="password"
+            placeholder="Enter your password"
+            required
+            className="mb-4 bg-dark text-white"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit" className="login-btn">
+            {loading ? "Signing Up..." : "Sign Up"}
+          </button>
+        </fieldset>
       </form>
+
       {/* Display success/error message */}
       {message && (
         <div
@@ -69,11 +74,9 @@ const SignUpComponent = () => {
         </div>
       )}
 
-      {/* Display team ID if available */}
-      {teamId && (
-        <div className="alert alert-info mt-2">
-          Your Team ID: <strong>{teamId}</strong>
-        </div>
+      {/* Show error from useApi if present */}
+      {error && !message && (
+        <div className="alert alert-danger mt-3">{error}</div>
       )}
     </div>
   );
