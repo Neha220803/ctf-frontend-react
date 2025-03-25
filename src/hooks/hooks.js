@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = "https://the-squid-hunt.vip";
+const API_URL = "https://the-squid-hunt.vip/";
 const TOKEN_KEY = "auth_token";
 const TEAM_ID_KEY = "team_id";
 
@@ -73,8 +73,22 @@ const useApi = () => {
   };
 
   // Signup function
-  const signup = async (email, password) => {
-    return fetchApi("/api/signup", "POST", { email, password });
+  const signup = async (
+    email,
+    password,
+    mobile1,
+    mobile2,
+    aadhar1,
+    aadhar2
+  ) => {
+    return fetchApi("/api/signup", "POST", {
+      email,
+      password,
+      mobile1,
+      mobile2,
+      aadhar1,
+      aadhar2,
+    });
   };
 
   // Login function
@@ -128,6 +142,10 @@ const useApi = () => {
     return fetchApi("/api/leaderboard", "GET");
   };
 
+  const getOfficerUsers = async () => {
+    return fetchApi("/api/officer/users", "GET");
+  };
+
   return {
     loading,
     error,
@@ -139,6 +157,7 @@ const useApi = () => {
     getTeamScore,
     submitFlag,
     getLeaderboard,
+    getOfficerUsers,
   };
 };
 

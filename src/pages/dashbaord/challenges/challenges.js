@@ -16,7 +16,9 @@ const ChallengesPage = () => {
     statusMessage: false,
     isSuccess: false,
     messageText: "",
+    link: "",
     challengeId: null,
+    hint: "",
   });
 
   // Use the API hook to get the functions and authentication state
@@ -75,6 +77,8 @@ const ChallengesPage = () => {
       challengeId: challenge.id,
       answer: "",
       statusMessage: false,
+      link: challenge.challengeLink,
+      hint: challenge.hint || "",
     });
   };
 

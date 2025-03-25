@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, Form, InputGroup } from "react-bootstrap";
+import { Modal, Button, Form, InputGroup, Accordion } from "react-bootstrap";
 import "./challengePopup.css";
 import { ImArrowRight } from "react-icons/im";
 const ChallengePopup = ({
@@ -8,6 +8,11 @@ const ChallengePopup = ({
   handleAnswerChange,
   handleSubmit,
 }) => {
+  const handleViewChallenge = () => {
+    if (modalData.link) {
+      window.open(modalData.link, "_blank");
+    }
+  };
   return (
     <Modal
       show={modalData.isOpen}
@@ -26,10 +31,20 @@ const ChallengePopup = ({
         <h2 className="text-center mb-3">Score: {modalData.points}</h2>
         <p className="mb-4">{modalData.description}</p>
 
-        <Button variant="primary" className="w-100 mb-3">
-          View HINTS
-        </Button>
-        <Button variant="success" className="w-100 mb-3">
+        <Accordion className="mb-3 p-0 m-0">
+          <Accordion.Item eventKey="0" className="">
+            <Accordion.Header className="m-0 p-0">View HINTS</Accordion.Header>
+            <Accordion.Body className="text-start py-2 m-0">
+              {modalData.hint || "No hint available for this challenge."}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        <Button
+          variant="success"
+          className="w-100 mb-3"
+          onClick={handleViewChallenge}
+          disabled={!modalData.link}
+        >
           View Challenge <ImArrowRight />
         </Button>
 

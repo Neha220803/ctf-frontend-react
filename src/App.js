@@ -6,6 +6,8 @@ import { Routes, Route, BrowserRouter, useLocation } from "react-router-dom";
 import ChallengesPage from "./pages/dashbaord/challenges/challenges";
 import LeaderboardPage from "./pages/dashbaord/leaderboard/leaderboard";
 import SignUpComponent from "./pages/login/signup";
+import Page404Comp from "./pages/404Page/404Page";
+import SquidGameManagerPortal from "./pages/officer/officer";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function AppContent() {
           path="/dashboard/leaderboard"
           element={<LeaderboardPage />}
         />
+        <Route path="/officer" element={<SquidGameManagerPortal />} />
+        <Route path="*" element={<Page404Comp />} />
       </Routes>
     </>
   );

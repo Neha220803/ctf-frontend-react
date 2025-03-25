@@ -1,0 +1,135 @@
+/* SquidGameManagerPortal.css */
+
+.squid-game-container {
+  background-color: #111 !important;
+  color: #fff !important;
+  font-family: "Arial", sans-serif;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.squid-game-title {
+  font-size: 2.5rem;
+  color: #ff0055;
+  text-shadow: 2px 2px 8px rgba(255, 0, 85, 0.7);
+  margin-bottom: 20px;
+}
+
+.squid-game-table {
+  margin-top: 2rem;
+  background-color: transparent;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.squid-game-table th {
+  background-color: #ff0055;
+  color: #fff;
+  border-color: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.squid-game-table td {
+  border-color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Override Bootstrap's default button styles */
+.btn-primary {
+  background-color: #ff0055;
+  border-color: #ff0055;
+}
+
+.btn-primary:hover {
+  background-color: #cc0044;
+  border-color: #cc0044;
+}
+
+.btn-danger {
+  background-color: #ff0055;
+  border-color: #ff0055;
+}
+
+.btn-danger:hover {
+  background-color: #cc0044;
+  border-color: #cc0044;
+}
+
+.btn-secondary {
+  background-color: #444;
+  border-color: #444;
+}
+
+.btn-secondary:hover {
+  background-color: #333;
+  border-color: #333;
+}
+
+/* Modal styling */
+.modal-content {
+  background-color: #222;
+  color: #fff;
+  border: none;
+}
+
+.modal-header {
+  border-bottom-color: #333;
+}
+
+.modal-footer {
+  border-top-color: #333;
+}
+
+.close {
+  color: #ff0055;
+}
+
+.profile-details {
+  background: #333;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.profile-details strong {
+  color: #ff0055;
+}
+
+.profile-details a {
+  color: #ff0055;
+  text-decoration: none;
+}
+
+.profile-details a:hover {
+  text-decoration: underline;
+}
+
+.custom-dark-table {
+  border-color: #fff !important;
+}
+
+.custom-dark-table th,
+.custom-dark-table td {
+  border-color: #fff !important;
+}
+
+.form-control {
+  background-color: #333;
+  border-color: #444;
+  color: #fff;
+}
+
+.form-control:focus {
+  background-color: #444;
+  border-color: #ff0055;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 0, 85, 0.25);
+}
+
+.text-danger {
+  color: #ff0055 !important;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
